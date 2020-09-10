@@ -26,9 +26,6 @@ serlibc.so: $(SRC) $(HDR)
 clean:
 	$(RM) *.o *.so *~ $(BUILD_DIR)/$(BIN)
 
-depend: $(SRC)
-	makedepend $(INCLUDES) $^
-
 debug_code:
 	$(RM) debug/debug
 	$(CC) -g -o debug/debug $(SRC) $(CFLAGS) $(INCLUDES) $(LIBS)
