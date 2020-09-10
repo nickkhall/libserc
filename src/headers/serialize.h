@@ -5,8 +5,6 @@
 
 #include <time.h>
 
-#include "common.h"
-
 typedef struct _ser_buff_t {
   char* buffer;
   int size;
@@ -236,7 +234,7 @@ void serlib_serialize_list_t(list_t* list,
  * Deserializes a employee list.
  * ------------------------------------------------------------------------------
  */
-void serlib_deserialize_list_t(ser_buff_t* b, void (*serialize_fn_ptr)(void *, ser_buff_t*));
+list_t* serlib_deserialize_list_t(ser_buff_t* b, void (*serialize_fn_ptr)(void *, ser_buff_t*));
 
 /*
  * ----------------------------------------------------------------------
