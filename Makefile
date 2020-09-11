@@ -7,8 +7,8 @@ RM = /bin/rm -f
 SRC = src/serialize.c
 HDR = src/headers/serialize.h
 
-BIN = serlibc
-BINS = serlibc.so
+BIN = libserc
+BINS = libserc.so
 BUILD_DIR = bin
 LIB_DIR = lib
 CFLAGS = -std=c18 -Wall
@@ -18,13 +18,13 @@ SRC = src/serialize.c
 
 all: $(BINS)
 
-serlibc.so: $(SRC) $(HDR)
+libserc.so: $(SRC) $(HDR)
 	$(CC) $(CFLAGS) -fPIC -shared -o $(LIB_DIR)/$@ $(SRC) -lc
 
 # prevent confusion with any files named "clean"
 .PHONY: clean
 clean:
-	$(RM) *.o *.so *~ $(BUILD_DIR)/$(BIN)
+	$(RM) $(LIB_DIR)/*.o $(LIB_DIR)/*.so
 
 debug_code:
 	$(RM) debug/debug
