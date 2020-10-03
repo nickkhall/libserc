@@ -258,5 +258,109 @@ void serlib_serialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*
  */
 list_node_t* serlib_deserialize_list_node_t(ser_buff_t* b, void (*serialize_fn_ptr)(void *, ser_buff_t*));
 
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_new
+ * ------------------------------------------------------
+ * params:
+ *       > list      - list_t*
+ *       > elem_size - int
+ *       > freeFn    - function pointer
+ *          > params: void*
+ * ------------------------------------------------------
+ * Creates a new linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_new(list_t* list, int elem_size, void (*freeFn)(void *));
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_destroy
+ * ------------------------------------------------------
+ * params  : list - list_t*
+ * ------------------------------------------------------
+ * Destroys a linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_destroy(list_t* list);
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_prepend
+ * ------------------------------------------------------
+ * params  :
+ *         > list    - list_t*
+ *         > element - void*
+ * ------------------------------------------------------
+ * Prepends a node on a linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_prepend(list_t* list, void* element);
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_append
+ * ------------------------------------------------------
+ * params  :
+ *         > list    - list_t*
+ *         > element - void*
+ * ------------------------------------------------------
+ * Appends a node to a linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_append(list_t* list, void* element);
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_get_size
+ * ------------------------------------------------------
+ * params  : list - list_t*
+ * ------------------------------------------------------
+ * Returns size of linked list.
+ * ------------------------------------------------------
+ */
+int serlib_list_get_size(list_t* list);
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_iterate
+ * ------------------------------------------------------
+ * params  :
+ *         > list          - list_t*
+ *         > list_iterator - function pointer
+ *           > params: void*
+ * ------------------------------------------------------
+ * Iterates through a linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_iterate(list_t* list, bool (*list_iterator)(void *));
+
+/*
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ */
+void serlib_list_get_head(list_t* list, void* element, bool should_remove);
+
+/*
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ */
+void serlib_list_get_tail(list_t* list, void* element);
+
+#endif
+
+
+
 #endif
 
