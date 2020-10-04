@@ -367,7 +367,7 @@ void serlib_serialize_list_t(list_t* list,
  * Deserializes a employee list.
  * ------------------------------------------------------------------------------
  */
-list_t* serlib_deserialize_list_t(ser_buff_t* b, void (*serialize_fn_ptr)(void *, ser_buff_t*)) {
+list_t* serlib_deserialize_list_t(ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*)) {
   if (!b || !b->buffer) return NULL;
 
   // create new generic linked list memory
@@ -375,7 +375,7 @@ list_t* serlib_deserialize_list_t(ser_buff_t* b, void (*serialize_fn_ptr)(void *
   serlib_list_new(list, sizeof(list_t), NULL);
 
   // set linked list head and deserialize data
-  list->head = serlib_deserialize_list_node_t(b, serialize_fn_ptr);
+  list->head = serlib_deserialize_list_node_t(b, deserialize_fn_ptr);
   list->tail = NULL;
 
   return list;
@@ -412,7 +412,7 @@ void serlib_serialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*
  * Deserializes a employee list node.
  * ----------------------------------------------------------------------
  */
-list_node_t* serlib_deserialize_list_node_t(ser_buff_t* b, void (*deserialize_fn_ptr)(void *, ser_buff_t*)) {
+list_node_t* serlib_deserialize_list_node_t(ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*)) {
   list_node_t* list_node = malloc(sizeof(list_node_t));
   
   deserialize_fn_ptr(list_node->data, b);

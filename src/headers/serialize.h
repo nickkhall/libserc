@@ -236,7 +236,7 @@ void serlib_serialize_list_t(list_t* list,
  * Deserializes a employee list.
  * ------------------------------------------------------------------------------
  */
-list_t* serlib_deserialize_list_t(ser_buff_t* b, void (*serialize_fn_ptr)(void *, ser_buff_t*));
+list_t* serlib_deserialize_list_t(ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*));
 
 /*
  * ----------------------------------------------------------------------
@@ -258,7 +258,7 @@ void serlib_serialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*
  * Deserializes a list node.
  * ----------------------------------------------------------------------
  */
-list_node_t* serlib_deserialize_list_node_t(ser_buff_t* b, void (*serialize_fn_ptr)(void *, ser_buff_t*));
+list_node_t* serlib_deserialize_list_node_t(ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*));
 
 
 /*
