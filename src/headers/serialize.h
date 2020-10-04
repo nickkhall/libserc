@@ -90,7 +90,7 @@ ser_header_t* serlib_header_init(int tid, int rpc_proc_id, int rpc_call_id, int 
  * (In/Decrements the next pointer)
  * --------------------------------------------------------------------
  */
-void serlib_buffer_skip(ser_buff_t* b, unsigned long int skip_size);
+void serlib_buffer_skip(ser_buff_t* b, int skip_size);
 
 /*
  * ---------------------------------------------------

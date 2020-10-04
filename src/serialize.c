@@ -122,10 +122,10 @@ ser_header_t* serlib_header_init(int tid, int rpc_proc_id, int rpc_call_id, int 
  * (In/Decrements the next pointer)
  * --------------------------------------------------------------------
  */
-void serlib_buffer_skip(ser_buff_t* b, unsigned long int skip_size) {
+void serlib_buffer_skip(ser_buff_t* b, int skip_size) {
   // if the skip_size is above 0,
   // and the buffer has access to the needed memory
-  if (b->next + skip_size > 0 &&
+  if (b->next + skip_size >= 0 &&
       b->next + skip_size < b->size
   ) {
     // skip the buffer
