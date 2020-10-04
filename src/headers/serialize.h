@@ -187,7 +187,21 @@ void serlib_deserialize_data(ser_buff_t* b, char* dest, int size);
  * Deserializes a buffers' string buffer for an integer.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data_int(ser_buff_t* b, int* dest, int size);
+void serlib_deserialize_data_int(ser_buff_t* b, int dest, int size);
+
+/*
+ * ----------------------------------------------------------------------
+ * function: serlib_deserialize_data_int_pointer
+ * ----------------------------------------------------------------------
+ * params  :
+ *         > dest - int*
+ *         > b    - ser_buff_t*
+ *         > size - int
+ * ----------------------------------------------------------------------
+ * Deserializes a buffers' string buffer for an integer.
+ * ----------------------------------------------------------------------
+ */
+void serlib_deserialize_data_int_pointer(ser_buff_t* b, int* dest, int size);
 
 /*
  * ----------------------------------------------------------------------
@@ -198,7 +212,7 @@ void serlib_deserialize_data_int(ser_buff_t* b, int* dest, int size);
  * Serializes a time_t.
  * ----------------------------------------------------------------------
  */
-void serlib_serialize_data_time_t(time_t* dest, ser_buff_t*b, int size);
+void serlib_serialize_data_time_t(ser_buff_t* b, time_t dest, int size);
 
 /*
  * ----------------------------------------------------------------------
@@ -209,7 +223,7 @@ void serlib_serialize_data_time_t(time_t* dest, ser_buff_t*b, int size);
  * Deserializes a time_t.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data_time_t(time_t* dest, ser_buff_t*b, int size);
+void serlib_serialize_data_time_t(ser_buff_t*b, time_t dest, int size);
 
 
 /*

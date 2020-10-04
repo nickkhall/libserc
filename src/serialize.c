@@ -297,7 +297,31 @@ void serlib_deserialize_data(ser_buff_t* b, char* dest, int size) {
  * Deserializes a buffers' string buffer for an integer.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data_int(ser_buff_t* b, int* dest, int size) {
+void serlib_deserialize_data_int(ser_buff_t* b, int dest, int size) {
+  if (!b || !b->buffer) assert(0);
+  if (!size) return;
+  if ((b->size - b->next) < size) assert(0);
+
+  // copy data from dest to string buffer
+  dest = (int)*(b->buffer + b->next);
+
+  // increment the buffer's next pointer
+  b->next += size;
+};
+
+/*
+ * ----------------------------------------------------------------------
+ * function: serlib_deserialize_data_int
+ * ----------------------------------------------------------------------
+ * params  :
+ *         > dest - int*
+ *         > b    - ser_buff_t*
+ *         > size - int
+ * ----------------------------------------------------------------------
+ * Deserializes a buffers' string buffer for an integer.
+ * ----------------------------------------------------------------------
+ */
+void serlib_deserialize_data_int_pointer(ser_buff_t* b, int* dest, int size) {
   if (!b || !b->buffer) assert(0);
   if (!size) return;
   if ((b->size - b->next) < size) assert(0);
@@ -318,7 +342,7 @@ void serlib_deserialize_data_int(ser_buff_t* b, int* dest, int size) {
  * Serializes a buffers' employee_t buffer.
  * ----------------------------------------------------------------------
  */
-void serlib_serialize_data_time_t(time_t* dest, ser_buff_t*b, int size) {
+void serlib_serialize_data_time_t(ser_buff_t* b, time_t dest, int size) {
 };
 
 /*
@@ -330,7 +354,16 @@ void serlib_serialize_data_time_t(time_t* dest, ser_buff_t*b, int size) {
  * Serializes a buffers' employee_t buffer.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data_time_t(time_t* dest, ser_buff_t*b, int size) {
+void serlib_deserialize_data_time_t(ser_buff_t*b, time_t* dest, int size) {
+  if (!b || !b->buffer) assert(0);
+  if (!size) return;
+  if ((b->size - b->next) < size) assert(0);
+
+  // copy data from dest to string buffer
+  memcpy(dest, (b->buffer + b->next), size);
+
+  // increment the buffer's next pointer
+  b->next += size;
 };
 
 /*
