@@ -3,6 +3,8 @@
 
 #define SERIALIZE_BUFFER_DEFAULT_SIZE 100
 
+#include <ctype.h>
+#include <stdbool.h>
 #include <time.h>
 
 typedef struct _ser_buff_t {
@@ -357,10 +359,6 @@ void serlib_list_get_head(list_t* list, void* element, bool should_remove);
  * ------------------------------------------------------
  */
 void serlib_list_get_tail(list_t* list, void* element);
-
-#endif
-
-
 
 #endif
 

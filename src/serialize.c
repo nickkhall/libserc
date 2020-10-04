@@ -370,8 +370,13 @@ void serlib_serialize_list_t(list_t* list,
 list_t* serlib_deserialize_list_t(ser_buff_t* b, void (*serialize_fn_ptr)(void *, ser_buff_t*)) {
   if (!b || !b->buffer) return NULL;
 
-  list_t* list = calloc(1, sizeof(list_t));
+  // create new generic linked list memory
+  list_t* list = malloc(sizeof(list_t));
+  serlib_list_new(list, sizeof(list_t), NULL);
+
+  // set linked list head and deserialize data
   list->head = serlib_deserialize_list_node_t(b, serialize_fn_ptr);
+  list->tail = NULL;
 
   return list;
 };
