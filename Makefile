@@ -19,7 +19,7 @@ SRC = src/serialize.c
 all: $(BINS)
 
 libserc.so: $(SRC) $(HDR)
-	$(CC) $(CFLAGS) -fPIC -shared -o $(LIB_DIR)/$@ $(SRC) -lc
+	$(CC) -g -DDEBUG $(CFLAGS) -fPIC -shared -o $(LIB_DIR)/$@ $(SRC) -lc
 
 # prevent confusion with any files named "clean"
 .PHONY: clean

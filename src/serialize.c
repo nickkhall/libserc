@@ -1,5 +1,8 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <assert.h>
 
@@ -119,10 +122,10 @@ ser_header_t* serlib_header_init(int tid, int rpc_proc_id, int rpc_call_id, int 
  * (In/Decrements the next pointer)
  * --------------------------------------------------------------------
  */
-void serlib_buffer_skip(ser_buff_t* b, unsigned long int skip_size) {
+void serlib_buffer_skip(ser_buff_t* b, int skip_size) {
   // if the skip_size is above 0,
   // and the buffer has access to the needed memory
-  if (b->next + skip_size > 0 &&
+  if (b->next + skip_size >= 0 &&
       b->next + skip_size < b->size
   ) {
     // skip the buffer
@@ -260,23 +263,23 @@ void serlib_serialize_data(ser_buff_t* b, char* data, int nbytes) {
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_deserialize_data
+ * function: serlib_deserialize_data_int
  * ----------------------------------------------------------------------
  * params  :
- *         > dest - char*
+ *         > dest - int*
  *         > b    - ser_buff_t*
  *         > size - int
  * ----------------------------------------------------------------------
- * Deserializes a buffers' string buffer.
+ * Deserializes a buffers' string buffer for an integer.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data(ser_buff_t* b, char* dest, int size) {
+void serlib_deserialize_data_int(ser_buff_t* b, int dest, int size) {
   if (!b || !b->buffer) assert(0);
   if (!size) return;
   if ((b->size - b->next) < size) assert(0);
 
   // copy data from dest to string buffer
-  memcpy(dest, b->buffer + b->next, size);
+  dest = (int)*(b->buffer + b->next);
 
   // increment the buffer's next pointer
   b->next += size;
@@ -294,7 +297,7 @@ void serlib_deserialize_data(ser_buff_t* b, char* dest, int size) {
  * Deserializes a buffers' string buffer for an integer.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data_int(ser_buff_t* b, int* dest, int size) {
+void serlib_deserialize_data_int_pointer(ser_buff_t* b, int* dest, int size) {
   if (!b || !b->buffer) assert(0);
   if (!size) return;
   if ((b->size - b->next) < size) assert(0);
@@ -315,7 +318,7 @@ void serlib_deserialize_data_int(ser_buff_t* b, int* dest, int size) {
  * Serializes a buffers' employee_t buffer.
  * ----------------------------------------------------------------------
  */
-void serlib_serialize_data_time_t(time_t* dest, ser_buff_t*b, int size) {
+void serlib_serialize_data_time_t(ser_buff_t* b, time_t dest, int size) {
 };
 
 /*
@@ -327,7 +330,40 @@ void serlib_serialize_data_time_t(time_t* dest, ser_buff_t*b, int size) {
  * Serializes a buffers' employee_t buffer.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data_time_t(time_t* dest, ser_buff_t*b, int size) {
+void serlib_deserialize_data_time_t(ser_buff_t*b, time_t* dest, int size) {
+  if (!b || !b->buffer) assert(0);
+  if (!size) return;
+  if ((b->size - b->next) < size) assert(0);
+
+  // copy data from dest to string buffer
+  memcpy(dest, (b->buffer + b->next), size);
+
+  // increment the buffer's next pointer
+  b->next += size;
+};
+
+/*
+ * ----------------------------------------------------------------------
+ * function: serlib_deserialize_data
+ * ----------------------------------------------------------------------
+ * params  :
+ *         > dest - char*
+ *         > b    - ser_buff_t*
+ *         > size - int
+ * ----------------------------------------------------------------------
+ * Deserializes a buffers' string buffer.
+ * ----------------------------------------------------------------------
+ */
+void serlib_deserialize_data(ser_buff_t* b, char* dest, int size) {
+  if (!b || !b->buffer) assert(0);
+  if (!size) return;
+  if ((b->size - b->next) < size) assert(0);
+
+  // copy data from dest to string buffer
+  memcpy(dest, b->buffer + b->next, size);
+
+  // increment the buffer's next pointer
+  b->next += size;
 };
 
 /*
@@ -354,35 +390,6 @@ void serlib_serialize_list_t(list_t* list,
 };
 
 /*
- * ------------------------------------------------------------------------------
- * function: serlib_deserialize_list_t
- * ------------------------------------------------------------------------------
- * params  :
- *         > b                - ser_buff_t*
- *         > serialize_fn_ptr - function pointer to function (void*, ser_buff_t*)
- * ------------------------------------------------------------------------------
- * Deserializes a employee list.
- * ------------------------------------------------------------------------------
- */
-list_t* serlib_deserialize_list_t(ser_buff_t* b, void (*serialize_fn_ptr)(void *, ser_buff_t*)) {
-  // set sentintal to default
-  unsigned int sentinel = 0;
-
-  // unmarshall buffer to check for sentinel
-  serlib_serialize_data(b, (char*)&sentinel,  sizeof(unsigned long int));
-
-  // if this is a sentinel section, return null
-  if (sentinel == 0xFFFFFFFF) {
-    return NULL;
-  }
-
-  list_t* list = calloc(1, sizeof(list_t));
-  list->head = serlib_deserialize_list_node_t(b, serialize_fn_ptr);
-
-  return list;
-};
-
-/*
  * ----------------------------------------------------------------------
  * function: serlib_serialize_list_node_t
  * ----------------------------------------------------------------------
@@ -404,7 +411,31 @@ void serlib_serialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*
   serlib_serialize_list_node_t(list_node->next, b, serialize_fn_ptr);
 };
 
-// THIS IS WRONG, IT WAS HW ASSIGNMENT, NOT IN COURSE, FIND THE SOLUTION
+/*
+ * ------------------------------------------------------------------------------
+ * function: serlib_deserialize_list_t
+ * ------------------------------------------------------------------------------
+ * params  :
+ *         > b                - ser_buff_t*
+ *         > serialize_fn_ptr - function pointer to function (void*, ser_buff_t*)
+ * ------------------------------------------------------------------------------
+ * Deserializes a employee list.
+ * ------------------------------------------------------------------------------
+ */
+list_t* serlib_deserialize_list_t(ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*)) {
+  if (!b || !b->buffer) return NULL;
+
+  // create new generic linked list memory
+  list_t* list = malloc(sizeof(list_t));
+  serlib_list_new(list, sizeof(list_t), NULL);
+
+  // set linked list head and deserialize data
+  serlib_deserialize_list_node_t(list->head, b, deserialize_fn_ptr);
+  list->tail = NULL;
+
+  return list;
+};
+
 /*
  * ----------------------------------------------------------------------
  * function: serlib_deserialize_list_node_t
@@ -414,23 +445,203 @@ void serlib_serialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*
  * Deserializes a employee list node.
  * ----------------------------------------------------------------------
  */
-list_node_t* serlib_deserialize_list_node_t(ser_buff_t* b, void (*serialize_fn_ptr)(void *, ser_buff_t*)) {
-  // set sentintal to default
-  unsigned int sentinel = 0;
-
-  // unmarshall buffer to check for sentinel
-  serlib_serialize_data(b, (char*)&sentinel, sizeof(unsigned int));
-
-  // if this is a sentinel section, return null
+void serlib_deserialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*)) {
+  int sentinel = 0xFFFFFFFF;
+  serlib_deserialize_data(b, (char*)&sentinel, sizeof(int));
   if (sentinel == 0xFFFFFFFF) {
-    return NULL;
+    return;
   }
 
-  list_node_t* list_node = calloc(1, sizeof(list_node_t));
-  
-  serialize_fn_ptr(list_node->data, b);
-  list_node->next = serlib_deserialize_list_node_t(b, serialize_fn_ptr);
+  serlib_buffer_skip(b, (int)(-1 * sizeof(int)));
 
-  return list_node;
+  deserialize_fn_ptr(list_node->data, b);
+  serlib_deserialize_list_node_t(list_node->next, b, deserialize_fn_ptr);
+};
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_new
+ * ------------------------------------------------------
+ * params:
+ *       > list      - list_t*
+ *       > elem_size - int
+ *       > freeFn    - function pointer
+ *          > params: void*
+ * ------------------------------------------------------
+ * Creates a new linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_new(list_t* list, int elem_size, void (*freeFn)(void *)) {
+  // make sure there is a size
+  assert(elem_size > 0);
+  
+  // set the default values
+  list->logical_length = 0;
+  list->elem_size = elem_size;
+  list->head = (list_node_t*) malloc(sizeof(list_node_t));
+  list->tail= list->head;
+
+  // pass freeing function ptr
+  list->freeFn = freeFn;
+};
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_destroy
+ * ------------------------------------------------------
+ * params  : list - list_t*
+ * ------------------------------------------------------
+ * Destroys a linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_destroy(list_t* list) {
+  // create current node pointer
+  list_node_t* current_node;
+
+  while(list->head != NULL) {
+    // set current node to list head to start
+    current_node = list->head;
+
+    // call clean up pointer function if there is one
+    if (list->freeFn) {
+      list->freeFn(current_node->data);
+    }
+
+    // free up node's data
+    free(current_node->data);
+    // free up node's pointer
+    free(current_node);
+  }
+};
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_prepend
+ * ------------------------------------------------------
+ * params  :
+ *         > list    - list_t*
+ *         > element - void*
+ * ------------------------------------------------------
+ * Prepends a node on a linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_prepend(list_t* list, void* element) {
+  // allocate memory for node
+  list_node_t* node = malloc(sizeof(list_node_t));
+
+  // create memory for node data
+  node->data = malloc(list->elem_size);
+  // copy data to node
+  memcpy(node->data, element, list->elem_size);
+
+  // set the next of node to list head
+  node->next = list->head;
+  // set list head to current node
+  list->head = node;
+
+  // if first node
+  if (!list->tail) {
+    // set list / node tail to head
+    list->tail = list->head;
+  }
+
+  // increment count of nodes
+  list->logical_length++;
+};
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_append
+ * ------------------------------------------------------
+ * params  :
+ *         > list    - list_t*
+ *         > element - void*
+ * ------------------------------------------------------
+ * Appends a node to a linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_append(list_t* list, void* element) {
+  // create memory for node
+  list_node_t* node = malloc(sizeof(list_node_t));
+  // create memory for node data
+  node->data = malloc(list->elem_size);
+  // set node pointer to NULL
+  node->next = NULL;
+
+  // copy the data into the node
+  memcpy(node->data, element, list->elem_size);
+
+  // if this is first node in list
+  if (list->logical_length == 0) {
+    list->head = node;
+    list->tail = node;
+  // else, we have other nodes, so append
+  } else {
+    list->tail->next = node;
+    list->tail = node;
+  }
+
+  // increment count of nodes
+  list->logical_length++;
+};
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_get_size
+ * ------------------------------------------------------
+ * params  : list - list_t*
+ * ------------------------------------------------------
+ * Returns size of linked list.
+ * ------------------------------------------------------
+ */
+int serlib_list_get_size(list_t* list) {
+  return list->logical_length;
+};
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_iterate
+ * ------------------------------------------------------
+ * params  :
+ *         > list          - list_t*
+ *         > list_iterator - function pointer
+ *           > params: void*
+ * ------------------------------------------------------
+ * Iterates through a linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_iterate(list_t* list, bool (*list_iterator)(void *)) {
+  assert(list_iterator != NULL);
+
+  list_node_t* node = list->head;
+  bool result = true;
+  while(node != NULL && result) {
+    result = list_iterator(node->data);
+    node = node->next;
+  }
+};
+
+/*
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ */
+void serlib_list_get_head(list_t* list, void* element, bool should_remove) {
+};
+
+/*
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ */
+void serlib_list_get_tail(list_t* list, void* element) {
 };
 

@@ -3,6 +3,8 @@
 
 #define SERIALIZE_BUFFER_DEFAULT_SIZE 100
 
+#include <ctype.h>
+#include <stdbool.h>
 #include <time.h>
 
 typedef struct _ser_buff_t {
@@ -88,7 +90,7 @@ ser_header_t* serlib_header_init(int tid, int rpc_proc_id, int rpc_call_id, int 
  * (In/Decrements the next pointer)
  * --------------------------------------------------------------------
  */
-void serlib_buffer_skip(ser_buff_t* b, unsigned long int skip_size);
+void serlib_buffer_skip(ser_buff_t* b, int skip_size);
 
 /*
  * ---------------------------------------------------
@@ -185,7 +187,21 @@ void serlib_deserialize_data(ser_buff_t* b, char* dest, int size);
  * Deserializes a buffers' string buffer for an integer.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data_int(ser_buff_t* b, int* dest, int size);
+void serlib_deserialize_data_int(ser_buff_t* b, int dest, int size);
+
+/*
+ * ----------------------------------------------------------------------
+ * function: serlib_deserialize_data_int_pointer
+ * ----------------------------------------------------------------------
+ * params  :
+ *         > dest - int*
+ *         > b    - ser_buff_t*
+ *         > size - int
+ * ----------------------------------------------------------------------
+ * Deserializes a buffers' string buffer for an integer.
+ * ----------------------------------------------------------------------
+ */
+void serlib_deserialize_data_int_pointer(ser_buff_t* b, int* dest, int size);
 
 /*
  * ----------------------------------------------------------------------
@@ -196,7 +212,7 @@ void serlib_deserialize_data_int(ser_buff_t* b, int* dest, int size);
  * Serializes a time_t.
  * ----------------------------------------------------------------------
  */
-void serlib_serialize_data_time_t(time_t* dest, ser_buff_t*b, int size);
+void serlib_serialize_data_time_t(ser_buff_t* b, time_t dest, int size);
 
 /*
  * ----------------------------------------------------------------------
@@ -207,7 +223,7 @@ void serlib_serialize_data_time_t(time_t* dest, ser_buff_t*b, int size);
  * Deserializes a time_t.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data_time_t(time_t* dest, ser_buff_t*b, int size);
+void serlib_serialize_data_time_t(ser_buff_t*b, time_t dest, int size);
 
 
 /*
@@ -234,7 +250,7 @@ void serlib_serialize_list_t(list_t* list,
  * Deserializes a employee list.
  * ------------------------------------------------------------------------------
  */
-list_t* serlib_deserialize_list_t(ser_buff_t* b, void (*serialize_fn_ptr)(void *, ser_buff_t*));
+list_t* serlib_deserialize_list_t(ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*));
 
 /*
  * ----------------------------------------------------------------------
@@ -251,12 +267,115 @@ void serlib_serialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*
  * ----------------------------------------------------------------------
  * function: serlib_deserialize_list_node_t
  * ----------------------------------------------------------------------
- * params  : b - ser_buff_t*
+ * params  :
+ *         > list_node          - list_node_t*
+ *         > b                  - ser_buff_t*
+ *         > deserialize_fn_ptr - void (*deserialize_fn_ptr) (void*, ser_buff_t*)
  * ----------------------------------------------------------------------
  * Deserializes a list node.
  * ----------------------------------------------------------------------
  */
-list_node_t* serlib_deserialize_list_node_t(ser_buff_t* b, void (*serialize_fn_ptr)(void *, ser_buff_t*));
+void serlib_deserialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*));
+
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_new
+ * ------------------------------------------------------
+ * params:
+ *       > list      - list_t*
+ *       > elem_size - int
+ *       > freeFn    - function pointer
+ *          > params: void*
+ * ------------------------------------------------------
+ * Creates a new linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_new(list_t* list, int elem_size, void (*freeFn)(void *));
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_destroy
+ * ------------------------------------------------------
+ * params  : list - list_t*
+ * ------------------------------------------------------
+ * Destroys a linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_destroy(list_t* list);
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_prepend
+ * ------------------------------------------------------
+ * params  :
+ *         > list    - list_t*
+ *         > element - void*
+ * ------------------------------------------------------
+ * Prepends a node on a linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_prepend(list_t* list, void* element);
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_append
+ * ------------------------------------------------------
+ * params  :
+ *         > list    - list_t*
+ *         > element - void*
+ * ------------------------------------------------------
+ * Appends a node to a linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_append(list_t* list, void* element);
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_get_size
+ * ------------------------------------------------------
+ * params  : list - list_t*
+ * ------------------------------------------------------
+ * Returns size of linked list.
+ * ------------------------------------------------------
+ */
+int serlib_list_get_size(list_t* list);
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_iterate
+ * ------------------------------------------------------
+ * params  :
+ *         > list          - list_t*
+ *         > list_iterator - function pointer
+ *           > params: void*
+ * ------------------------------------------------------
+ * Iterates through a linked list.
+ * ------------------------------------------------------
+ */
+void serlib_list_iterate(list_t* list, bool (*list_iterator)(void *));
+
+/*
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ */
+void serlib_list_get_head(list_t* list, void* element, bool should_remove);
+
+/*
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ *
+ * ------------------------------------------------------
+ */
+void serlib_list_get_tail(list_t* list, void* element);
 
 #endif
 
