@@ -267,12 +267,15 @@ void serlib_serialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*
  * ----------------------------------------------------------------------
  * function: serlib_deserialize_list_node_t
  * ----------------------------------------------------------------------
- * params  : b - ser_buff_t*
+ * params  :
+ *         > list_node          - list_node_t*
+ *         > b                  - ser_buff_t*
+ *         > deserialize_fn_ptr - void (*deserialize_fn_ptr) (void*, ser_buff_t*)
  * ----------------------------------------------------------------------
  * Deserializes a list node.
  * ----------------------------------------------------------------------
  */
-list_node_t* serlib_deserialize_list_node_t(ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*));
+void serlib_deserialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*));
 
 
 /*
