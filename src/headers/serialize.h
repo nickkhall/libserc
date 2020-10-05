@@ -295,6 +295,17 @@ void serlib_list_new(list_t* list, int elem_size, void (*freeFn)(void *));
 
 /*
  * ------------------------------------------------------
+ * function: serlib_list_new_node
+ * ------------------------------------------------------
+ * params  : size - int
+ * ------------------------------------------------------
+ * Creates a new linked list node.
+ * ------------------------------------------------------
+ */
+list_node_t* serlib_list_new_node(int size);
+
+/*
+ * ------------------------------------------------------
  * function: serlib_list_destroy
  * ------------------------------------------------------
  * params  : list - list_t*

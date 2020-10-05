@@ -478,11 +478,29 @@ void serlib_list_new(list_t* list, int elem_size, void (*freeFn)(void *)) {
   // set the default values
   list->logical_length = 0;
   list->elem_size = elem_size;
-  list->head = (list_node_t*) malloc(sizeof(list_node_t));
+  list->head = serlib_list_new_node(elem_size);
   list->tail= list->head;
 
   // pass freeing function ptr
   list->freeFn = freeFn;
+};
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_new_node
+ * ------------------------------------------------------
+ * params  : size - int
+ * ------------------------------------------------------
+ * Creates a new linked list node.
+ * ------------------------------------------------------
+ */
+list_node_t* serlib_list_new_node(int size) {
+  list_node_t* list_node = (list_node_t*) malloc(sizeof(list_node_t));
+
+  list_node->data = (void*) malloc(sizeof(size));
+  list_node->next = NULL;
+
+  return list_node;
 };
 
 /*
