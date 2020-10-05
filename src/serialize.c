@@ -263,30 +263,6 @@ void serlib_serialize_data(ser_buff_t* b, char* data, int nbytes) {
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_deserialize_data
- * ----------------------------------------------------------------------
- * params  :
- *         > dest - char*
- *         > b    - ser_buff_t*
- *         > size - int
- * ----------------------------------------------------------------------
- * Deserializes a buffers' string buffer.
- * ----------------------------------------------------------------------
- */
-void serlib_deserialize_data(ser_buff_t* b, char* dest, int size) {
-  if (!b || !b->buffer) assert(0);
-  if (!size) return;
-  if ((b->size - b->next) < size) assert(0);
-
-  // copy data from dest to string buffer
-  memcpy(dest, b->buffer + b->next, size);
-
-  // increment the buffer's next pointer
-  b->next += size;
-};
-
-/*
- * ----------------------------------------------------------------------
  * function: serlib_deserialize_data_int
  * ----------------------------------------------------------------------
  * params  :
@@ -368,6 +344,30 @@ void serlib_deserialize_data_time_t(ser_buff_t*b, time_t* dest, int size) {
 
 /*
  * ----------------------------------------------------------------------
+ * function: serlib_deserialize_data
+ * ----------------------------------------------------------------------
+ * params  :
+ *         > dest - char*
+ *         > b    - ser_buff_t*
+ *         > size - int
+ * ----------------------------------------------------------------------
+ * Deserializes a buffers' string buffer.
+ * ----------------------------------------------------------------------
+ */
+void serlib_deserialize_data(ser_buff_t* b, char* dest, int size) {
+  if (!b || !b->buffer) assert(0);
+  if (!size) return;
+  if ((b->size - b->next) < size) assert(0);
+
+  // copy data from dest to string buffer
+  memcpy(dest, b->buffer + b->next, size);
+
+  // increment the buffer's next pointer
+  b->next += size;
+};
+
+/*
+ * ----------------------------------------------------------------------
  * function: serlib_serialize_list_t
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
@@ -387,6 +387,28 @@ void serlib_serialize_list_t(list_t* list,
   }
 
   serlib_serialize_list_node_t(list->head, b, serialize_fn_ptr);
+};
+
+/*
+ * ----------------------------------------------------------------------
+ * function: serlib_serialize_list_node_t
+ * ----------------------------------------------------------------------
+ * params  : b - ser_buff_t*
+ * ----------------------------------------------------------------------
+ * Serializes a employee list node.
+ * ----------------------------------------------------------------------
+ */
+void serlib_serialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*serialize_fn_ptr)(void*, ser_buff_t*))
+{
+  // if this is a sentinel section, return null
+  if (!list_node) {
+    unsigned int sentinel = 0xFFFFFFFF;
+    serlib_serialize_data(b, (char*)&sentinel, sizeof(unsigned int));
+    return;
+  }
+
+  serialize_fn_ptr(list_node->data, b);
+  serlib_serialize_list_node_t(list_node->next, b, serialize_fn_ptr);
 };
 
 /*
@@ -416,28 +438,6 @@ list_t* serlib_deserialize_list_t(ser_buff_t* b, void (*deserialize_fn_ptr)(void
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_serialize_list_node_t
- * ----------------------------------------------------------------------
- * params  : b - ser_buff_t*
- * ----------------------------------------------------------------------
- * Serializes a employee list node.
- * ----------------------------------------------------------------------
- */
-void serlib_serialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*serialize_fn_ptr)(void*, ser_buff_t*))
-{
-  // if this is a sentinel section, return null
-  if (!list_node) {
-    unsigned int sentinel = 0xFFFFFFFF;
-    serlib_serialize_data(b, (char*)&sentinel, sizeof(unsigned int));
-    return;
-  }
-
-  serialize_fn_ptr(list_node->data, b);
-  serlib_serialize_list_node_t(list_node->next, b, serialize_fn_ptr);
-};
-
-/*
- * ----------------------------------------------------------------------
  * function: serlib_deserialize_list_node_t
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
@@ -445,9 +445,15 @@ void serlib_serialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*
  * Deserializes a employee list node.
  * ----------------------------------------------------------------------
  */
-list_node_t* serlib_deserialize_list_node_t(ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*)) {
-  list_node_t* list_node = malloc(sizeof(list_node_t));
-  
+void serlib_deserialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*)) {
+  unsigned int sentinel = 0xFFFFFFFF;
+  serlib_deserialize_data(b, (char*)&sentinel, sizeof(unsigned int));
+  if (sentinel == 0xFFFFFFFF) {
+    return NULL;
+  }
+
+  serlib_buffer_skip(b, (-1 * sizeof(unsigned int));
+
   deserialize_fn_ptr(list_node->data, b);
   list_node->next = serlib_deserialize_list_node_t(b, deserialize_fn_ptr);
 
