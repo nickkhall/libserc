@@ -104,24 +104,24 @@ void serlib_buffer_skip(ser_buff_t* b, int skip_size);
 void serlib_reset_buffer(ser_buff_t* b);
 
 /*
- * ---------------------------------------------------
+ * ----------------------------------------------------
  * function: serlib_get_buffer_length
- * ---------------------------------------------------
+ * ----------------------------------------------------
  * params  : b - ser_buff_t*
- * ---------------------------------------------------
- * Frees the memory and destroys a buffer type.
- * ---------------------------------------------------
+ * ----------------------------------------------------
+ * Gets length of serialized buffer.
+ * ----------------------------------------------------
  */
 int serlib_get_buffer_length(ser_buff_t* b);
 
 /*
- * -----------------------------------------------------
+ * -------------------------------------------------------
  * function: serlib_get_buffer_data_size
- * -----------------------------------------------------
+ * -------------------------------------------------------
  * params  : b - ser_buff_t*
- * -----------------------------------------------------
+ * -------------------------------------------------------
  * Gets data size of serialized buffer.
- * -----------------------------------------------------
+ * -------------------------------------------------------
  */
 int serlib_get_buffer_data_size(ser_buff_t* b);
 
@@ -163,17 +163,17 @@ void serlib_serialize_data(ser_buff_t* b, char* data, int nbytes);
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_deserialize_data
+ * function: serlib_serialize_data_int_ptr
  * ----------------------------------------------------------------------
  * params  :
- *         > b    - ser_buff_t*
- *         > dest - char*
- *         > size - int
+ *         > b      - ser_buff_t*
+ *         > data   - int*
+ *         > nbytes - int
  * ----------------------------------------------------------------------
- * Deserializes a buffers' string buffer.
+ * Deserializes a buffers' string buffer for an integer.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data(ser_buff_t* b, char* dest, int size);
+void serlib_serialize_data_int_ptr(ser_buff_t* b, int* data, int nbytes);
 
 /*
  * ----------------------------------------------------------------------
@@ -191,17 +191,17 @@ void serlib_deserialize_data_int(ser_buff_t* b, int dest, int size);
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_deserialize_data_int_pointer
+ * function: serlib_deserialize_data_int_ptr
  * ----------------------------------------------------------------------
  * params  :
- *         > dest - int*
  *         > b    - ser_buff_t*
+ *         > dest - int*
  *         > size - int
  * ----------------------------------------------------------------------
  * Deserializes a buffers' string buffer for an integer.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data_int_pointer(ser_buff_t* b, int* dest, int size);
+void serlib_deserialize_data_int_ptr(ser_buff_t* b, int* dest, int size);
 
 /*
  * ----------------------------------------------------------------------
@@ -209,7 +209,7 @@ void serlib_deserialize_data_int_pointer(ser_buff_t* b, int* dest, int size);
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
  * ----------------------------------------------------------------------
- * Serializes a time_t.
+ * Serializes a buffers' employee_t buffer.
  * ----------------------------------------------------------------------
  */
 void serlib_serialize_time_t(ser_buff_t* b, time_t dest, int size);
@@ -220,11 +220,24 @@ void serlib_serialize_time_t(ser_buff_t* b, time_t dest, int size);
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
  * ----------------------------------------------------------------------
- * Deserializes a time_t.
+ * Serializes a buffers' employee_t buffer.
  * ----------------------------------------------------------------------
  */
-void serlib_serialize_time_t(ser_buff_t*b, time_t dest, int size);
+void serlib_deserialize_time_t(ser_buff_t*b, time_t* dest, int size);
 
+/*
+ * ----------------------------------------------------------------------
+ * function: serlib_deserialize_data
+ * ----------------------------------------------------------------------
+ * params  :
+ *         > dest - char*
+ *         > b    - ser_buff_t*
+ *         > size - int
+ * ----------------------------------------------------------------------
+ * Deserializes a buffers' string buffer.
+ * ----------------------------------------------------------------------
+ */
+void serlib_deserialize_data(ser_buff_t* b, char* dest, int size);
 
 /*
  * ----------------------------------------------------------------------
@@ -232,7 +245,7 @@ void serlib_serialize_time_t(ser_buff_t*b, time_t dest, int size);
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
  * ----------------------------------------------------------------------
- * Serializes a list.
+ * Deserializes a buffers' employee_t buffer.
  * ----------------------------------------------------------------------
  */
 void serlib_serialize_list_t(list_t* list,
@@ -240,43 +253,26 @@ void serlib_serialize_list_t(list_t* list,
                              void (* serialize_fn_ptr)(void *, ser_buff_t*));
 
 /*
- * ------------------------------------------------------------------------------
- * function: serlib_deserialize_list_t
- * ------------------------------------------------------------------------------
- * params  :
- *         > b                - ser_buff_t*
- *         > serialize_fn_ptr - function pointer to function (void*, ser_buff_t*)
- * ------------------------------------------------------------------------------
- * Deserializes a employee list.
- * ------------------------------------------------------------------------------
- */
-list_t* serlib_deserialize_list_t(ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*));
-
-/*
  * ----------------------------------------------------------------------
  * function: serlib_serialize_list_node_t
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
  * ----------------------------------------------------------------------
- * Serializes a list node.
+ * Serializes a employee list node.
  * ----------------------------------------------------------------------
  */
-void serlib_serialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*serialize_fn_ptr)(void*, ser_buff_t* b));
+void serlib_serialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*serialize_fn_ptr)(void*, ser_buff_t*));
 
 /*
  * ----------------------------------------------------------------------
  * function: serlib_deserialize_list_node_t
  * ----------------------------------------------------------------------
- * params  :
- *         > list_node          - list_node_t*
- *         > b                  - ser_buff_t*
- *         > deserialize_fn_ptr - void (*deserialize_fn_ptr) (void*, ser_buff_t*)
+ * params  : b - ser_buff_t*
  * ----------------------------------------------------------------------
- * Deserializes a list node.
+ * Deserializes a employee list node.
  * ----------------------------------------------------------------------
  */
 void serlib_deserialize_list_node_t(list_node_t* list_node, ser_buff_t* b, void (*deserialize_fn_ptr)(void*, ser_buff_t*));
-
 
 /*
  * ------------------------------------------------------
@@ -387,6 +383,4 @@ void serlib_list_get_head(list_t* list, void* element, bool should_remove);
  * ------------------------------------------------------
  */
 void serlib_list_get_tail(list_t* list, void* element);
-
-#endif
 
