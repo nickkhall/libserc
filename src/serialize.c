@@ -311,26 +311,26 @@ void serlib_deserialize_data_int_pointer(ser_buff_t* b, int* dest, int size) {
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_serialize_data_time_t
+ * function: serlib_serialize_time_t
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
  * ----------------------------------------------------------------------
  * Serializes a buffers' employee_t buffer.
  * ----------------------------------------------------------------------
  */
-void serlib_serialize_data_time_t(ser_buff_t* b, time_t dest, int size) {
+void serlib_serialize_time_t(ser_buff_t* b, time_t dest, int size) {
 };
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_serialize_data_time_t
+ * function: serlib_serialize_time_t
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
  * ----------------------------------------------------------------------
  * Serializes a buffers' employee_t buffer.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data_time_t(ser_buff_t*b, time_t* dest, int size) {
+void serlib_deserialize_time_t(ser_buff_t*b, time_t* dest, int size) {
   if (!b || !b->buffer) assert(0);
   if (!size) return;
   if ((b->size - b->next) < size) assert(0);

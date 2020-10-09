@@ -205,25 +205,25 @@ void serlib_deserialize_data_int_pointer(ser_buff_t* b, int* dest, int size);
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_serialize_data_time_t
+ * function: serlib_serialize_time_t
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
  * ----------------------------------------------------------------------
  * Serializes a time_t.
  * ----------------------------------------------------------------------
  */
-void serlib_serialize_data_time_t(ser_buff_t* b, time_t dest, int size);
+void serlib_serialize_time_t(ser_buff_t* b, time_t dest, int size);
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_serialize_data_time_t
+ * function: serlib_serialize_time_t
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
  * ----------------------------------------------------------------------
  * Deserializes a time_t.
  * ----------------------------------------------------------------------
  */
-void serlib_serialize_data_time_t(ser_buff_t*b, time_t dest, int size);
+void serlib_serialize_time_t(ser_buff_t*b, time_t dest, int size);
 
 
 /*
