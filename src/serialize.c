@@ -374,7 +374,7 @@ void serlib_deserialize_data_int_ptr(ser_buff_t* b, int* dest, int size) {
  * Serializes a buffers' employee_t buffer.
  * ----------------------------------------------------------------------
  */
-void serlib_serialize_time_t(ser_buff_t* b, time_t dest, int size) {
+void serlib_serialize_time_t(ser_buff_t* b, time_t* data, int size) {
   if (b == NULL) assert(0);
 
   ser_buff_t* buff = (ser_buff_t*)(b);
@@ -384,7 +384,7 @@ void serlib_serialize_time_t(ser_buff_t* b, time_t dest, int size) {
   int should_resize = 0;
 
   // if we don't have enough memory for data in buffer
-  while(available_size < nbytes) {
+  while(available_size < size) {
     // increase (multiply) buffer size by 2
     buff->size = buff->size * 2;
 
@@ -398,10 +398,10 @@ void serlib_serialize_time_t(ser_buff_t* b, time_t dest, int size) {
   // else we have enough memory for data in buffer
   if (should_resize == 0) {
     // copy data from src to buffer's buffer (b->buffer)
-    memcpy((time_t*)buff->buffer + buff->next, data, nbytes);
+    memcpy((time_t*)buff->buffer + buff->next, data, size);
 
     // increase the buffers next memory to nbytes
-    buff->next += nbytes;
+    buff->next += size;
 
     return;
   }
@@ -410,17 +410,17 @@ void serlib_serialize_time_t(ser_buff_t* b, time_t dest, int size) {
   buff->buffer = realloc(buff->buffer, buff->size);
 
   // copy data to buffer's buffer (b->buffer)
-  memcpy((time_t*)buff->buffer + buff->next, data, nbytes);
+  memcpy((time_t*)buff->buffer + buff->next, data, size);
 
   // increase buffer's next memory by nbtyes
-  buff->next += nbytes;
+  buff->next += size;
 
   return;
 };
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_serialize_time_t
+ * function: serlib_deserialize_time_t
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
  * ----------------------------------------------------------------------

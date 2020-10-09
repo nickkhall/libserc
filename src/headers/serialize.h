@@ -212,11 +212,11 @@ void serlib_deserialize_data_int_ptr(ser_buff_t* b, int* dest, int size);
  * Serializes a buffers' employee_t buffer.
  * ----------------------------------------------------------------------
  */
-void serlib_serialize_time_t(ser_buff_t* b, time_t dest, int size);
+void serlib_serialize_time_t(ser_buff_t* b, time_t* data, int size);
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_serialize_time_t
+ * function: serlib_deserialize_time_t
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
  * ----------------------------------------------------------------------
@@ -384,3 +384,4 @@ void serlib_list_get_head(list_t* list, void* element, bool should_remove);
  */
 void serlib_list_get_tail(list_t* list, void* element);
 
+#endif
