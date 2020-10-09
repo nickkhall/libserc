@@ -263,6 +263,62 @@ void serlib_serialize_data(ser_buff_t* b, char* data, int nbytes) {
 
 /*
  * ----------------------------------------------------------------------
+ * function: serlib_serialize_data_int_ptr
+ * ----------------------------------------------------------------------
+ * params  :
+ *         > b      - ser_buff_t*
+ *         > data   - int*
+ *         > nbytes - int
+ * ----------------------------------------------------------------------
+ * Deserializes a buffers' string buffer for an integer.
+ * ----------------------------------------------------------------------
+ */
+void serlib_serialize_data_int_ptr(ser_buff_t* b, int* data, int nbytes) {
+  if (b == NULL) assert(0);
+
+  ser_buff_t* buff = (ser_buff_t*)(b);
+  // get total available size of buffer
+  int available_size = buff->size - buff->next;
+  // resize flag used for resizing buffer
+  int should_resize = 0;
+
+  // if we don't have enough memory for data in buffer
+  while(available_size < nbytes) {
+    // increase (multiply) buffer size by 2
+    buff->size = buff->size * 2;
+
+    // update total available size
+    available_size = buff->size - buff->next;
+
+    // set should resize flag
+    should_resize = 1;
+  }
+
+  // else we have enough memory for data in buffer
+  if (should_resize == 0) {
+    // copy data from src to buffer's buffer (b->buffer)
+    memcpy((int*)buff->buffer + buff->next, data, nbytes);
+
+    // increase the buffers next memory to nbytes
+    buff->next += nbytes;
+
+    return;
+  }
+
+  // resize the buffer
+  buff->buffer = realloc(buff->buffer, buff->size);
+
+  // copy data to buffer's buffer (b->buffer)
+  memcpy((int*)buff->buffer + buff->next, data, nbytes);
+
+  // increase buffer's next memory by nbtyes
+  buff->next += nbytes;
+
+  return;
+}
+
+/*
+ * ----------------------------------------------------------------------
  * function: serlib_deserialize_data_int
  * ----------------------------------------------------------------------
  * params  :
@@ -287,23 +343,23 @@ void serlib_deserialize_data_int(ser_buff_t* b, int dest, int size) {
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_deserialize_data_int
+ * function: serlib_deserialize_data_int_ptr
  * ----------------------------------------------------------------------
  * params  :
- *         > dest - int*
  *         > b    - ser_buff_t*
+ *         > dest - int*
  *         > size - int
  * ----------------------------------------------------------------------
  * Deserializes a buffers' string buffer for an integer.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data_int_pointer(ser_buff_t* b, int* dest, int size) {
+void serlib_deserialize_data_int_ptr(ser_buff_t* b, int* dest, int size) {
   if (!b || !b->buffer) assert(0);
   if (!size) return;
   if ((b->size - b->next) < size) assert(0);
 
   // copy data from dest to string buffer
-  memcpy(dest, (int*)b->buffer + b->next, size);
+  memcpy(dest, (int*)(b->buffer + b->next), size);
 
   // increment the buffer's next pointer
   b->next += size;
@@ -311,26 +367,67 @@ void serlib_deserialize_data_int_pointer(ser_buff_t* b, int* dest, int size) {
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_serialize_data_time_t
+ * function: serlib_serialize_time_t
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
  * ----------------------------------------------------------------------
  * Serializes a buffers' employee_t buffer.
  * ----------------------------------------------------------------------
  */
-void serlib_serialize_data_time_t(ser_buff_t* b, time_t dest, int size) {
+void serlib_serialize_time_t(ser_buff_t* b, time_t* data, int size) {
+  if (b == NULL) assert(0);
+
+  ser_buff_t* buff = (ser_buff_t*)(b);
+  // get total available size of buffer
+  int available_size = buff->size - buff->next;
+  // resize flag used for resizing buffer
+  int should_resize = 0;
+
+  // if we don't have enough memory for data in buffer
+  while(available_size < size) {
+    // increase (multiply) buffer size by 2
+    buff->size = buff->size * 2;
+
+    // update total available size
+    available_size = buff->size - buff->next;
+
+    // set should resize flag
+    should_resize = 1;
+  }
+
+  // else we have enough memory for data in buffer
+  if (should_resize == 0) {
+    // copy data from src to buffer's buffer (b->buffer)
+    memcpy((time_t*)buff->buffer + buff->next, data, size);
+
+    // increase the buffers next memory to nbytes
+    buff->next += size;
+
+    return;
+  }
+
+  // resize the buffer
+  buff->buffer = realloc(buff->buffer, buff->size);
+
+  // copy data to buffer's buffer (b->buffer)
+  memcpy((time_t*)buff->buffer + buff->next, data, size);
+
+  // increase buffer's next memory by nbtyes
+  buff->next += size;
+
+  return;
 };
 
 /*
  * ----------------------------------------------------------------------
- * function: serlib_serialize_data_time_t
+ * function: serlib_deserialize_time_t
  * ----------------------------------------------------------------------
  * params  : b - ser_buff_t*
  * ----------------------------------------------------------------------
  * Serializes a buffers' employee_t buffer.
  * ----------------------------------------------------------------------
  */
-void serlib_deserialize_data_time_t(ser_buff_t*b, time_t* dest, int size) {
+void serlib_deserialize_time_t(ser_buff_t*b, time_t* dest, int size) {
   if (!b || !b->buffer) assert(0);
   if (!size) return;
   if ((b->size - b->next) < size) assert(0);
@@ -478,11 +575,29 @@ void serlib_list_new(list_t* list, int elem_size, void (*freeFn)(void *)) {
   // set the default values
   list->logical_length = 0;
   list->elem_size = elem_size;
-  list->head = (list_node_t*) malloc(sizeof(list_node_t));
+  list->head = serlib_list_new_node(elem_size);
   list->tail= list->head;
 
   // pass freeing function ptr
   list->freeFn = freeFn;
+};
+
+/*
+ * ------------------------------------------------------
+ * function: serlib_list_new_node
+ * ------------------------------------------------------
+ * params  : size - int
+ * ------------------------------------------------------
+ * Creates a new linked list node.
+ * ------------------------------------------------------
+ */
+list_node_t* serlib_list_new_node(int size) {
+  list_node_t* list_node = (list_node_t*) malloc(sizeof(list_node_t));
+
+  list_node->data = (void*) malloc(sizeof(size));
+  list_node->next = NULL;
+
+  return list_node;
 };
 
 /*
