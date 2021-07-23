@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "../include/serialize.h"
+#include "../include/serc.h"
 
 /*
  * ------------------------------------------------------

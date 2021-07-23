@@ -8,7 +8,7 @@ SRC = src/serc.c
 HDR = include/serc.h
 
 BIN = libserc
-BINS = libserc.so
+BINS = serc.so
 BUILD_DIR = bin
 LIB_DIR = lib
 CFLAGS = -std=c18 -Wall
@@ -18,7 +18,7 @@ SRC = src/serc.c
 
 all: $(BINS)
 
-libserc.so: $(SRC) $(HDR)
+$(BINS): $(SRC) $(HDR)
 	$(CC) -g -DDEBUG $(CFLAGS) -fPIC -shared -o $(LIB_DIR)/$@ $(SRC) -lc
 
 # prevent confusion with any files named "clean"
