@@ -4,8 +4,8 @@ LDFLAGS = -o $(BIN) $(LIBPATH) $(LIBS)
 CFDEBUG = $(CFLAGS) -g -DDEBUG $(LDFLAGS)
 RM = /bin/rm -f
 
-SRC = src/serialize.c
-HDR = src/headers/serialize.h
+SRC = src/serc.c
+HDR = include/serc.h
 
 BIN = libserc
 BINS = libserc.so
@@ -14,7 +14,7 @@ LIB_DIR = lib
 CFLAGS = -std=c18 -Wall
 
 # All .c source files
-SRC = src/serialize.c
+SRC = src/serc.c
 
 all: $(BINS)
 
